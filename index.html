@@ -219,12 +219,12 @@
     }
     .hero-value .num { display: flex; align-items: baseline; gap: 3px; min-width: 0; }
     .hero-value .num #periodSalary {
-      font-size: clamp(30px, 7vw, 44px); font-weight: 800; letter-spacing: -.03em;
-      line-height: 1.04; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; color: var(--accent);
+      font-size: clamp(24px, 5.6vw, 38px); font-weight: 800; letter-spacing: -.03em;
+      line-height: 1.1; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--accent);
     }
     .hero-value .unit { font-size: 18px; font-weight: 700; color: var(--muted); }
 
-    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
     .stat {
       background: #f8f2e8; border: 1px solid var(--line2); border-radius: 13px; padding: 14px 15px;
       transition: transform .15s, box-shadow .15s, border-color .15s;
@@ -232,11 +232,11 @@
     .stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); border-color: #ecdfc9; }
     .stat .result-label { color: var(--muted); font-size: 12px; font-weight: 700; margin-bottom: 6px; }
     .stat .value {
-      display: flex; align-items: baseline; justify-content: space-between; gap: 6px;
-      font-size: 20px; font-weight: 800; letter-spacing: -.02em;
+      display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+      font-size: 19px; font-weight: 800; letter-spacing: -.02em;
       color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1.2;
     }
-    .stat .value span:first-child { min-width: 0; overflow-wrap: anywhere; }
+    .stat .value span:first-child { min-width: 0; white-space: nowrap; }
 
     .copy {
       width: 36px; min-width: 36px; height: 34px; padding: 0;
@@ -328,7 +328,6 @@
         <div class="preset" aria-label="빠른 설정">
           <div class="preset-head">
             <span class="plabel">빠른 기간 <em>개월</em></span>
-            <button type="button" class="primary" id="resetExample">예시값으로</button>
           </div>
           <div class="preset-grid">
             <button type="button" data-months="1">1</button>
@@ -463,15 +462,6 @@
         endMonth.value = monthValue(start + months - 1);
         calculate();
       });
-    });
-
-    document.getElementById("resetExample").addEventListener("click", () => {
-      salary.value = "55,200";
-      salaryUnit.value = "1000";
-      rate.value = "20";
-      startMonth.value = "2026-04";
-      endMonth.value = "2026-05";
-      calculate();
     });
 
     document.querySelectorAll("[data-copy]").forEach((button) => {
