@@ -155,8 +155,12 @@
       background: #f6f8fc; color: var(--muted); font-weight: 800;
     }
 
-    .preset-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; align-items: center; }
-    .preset-bar .plabel { font-size: 12.5px; font-weight: 700; color: var(--muted); margin-right: 2px; }
+    .preset { margin-top: 22px; }
+    .preset-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 11px; }
+    .plabel { font-size: 12.5px; font-weight: 700; color: var(--muted); }
+    .plabel em { font-style: normal; font-weight: 800; color: var(--accent); margin-left: 2px; }
+    .preset-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+    .preset-grid button { border-radius: 10px; min-height: 44px; padding: 0; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
 
     button {
       min-height: 40px;
@@ -275,7 +279,7 @@
       .layout, .grid { display: block; }
       .panel + .panel, .field + .field { margin-top: 16px; }
       .form { padding: 22px; }
-      .primary { margin-left: 0; }
+      .preset-grid { grid-template-columns: repeat(4, 1fr); }
     }
   </style>
 </head>
@@ -321,21 +325,25 @@
           </div>
         </div>
 
-        <div class="preset-bar" aria-label="빠른 설정">
-          <span class="plabel">빠른 기간</span>
-          <button type="button" data-months="1">1개월</button>
-          <button type="button" data-months="2">2개월</button>
-          <button type="button" data-months="3">3개월</button>
-          <button type="button" data-months="4">4개월</button>
-          <button type="button" data-months="5">5개월</button>
-          <button type="button" data-months="6">6개월</button>
-          <button type="button" data-months="7">7개월</button>
-          <button type="button" data-months="8">8개월</button>
-          <button type="button" data-months="9">9개월</button>
-          <button type="button" data-months="10">10개월</button>
-          <button type="button" data-months="11">11개월</button>
-          <button type="button" data-months="12">12개월</button>
-          <button type="button" class="primary" id="resetExample">예시값으로</button>
+        <div class="preset" aria-label="빠른 설정">
+          <div class="preset-head">
+            <span class="plabel">빠른 기간 <em>개월</em></span>
+            <button type="button" class="primary" id="resetExample">예시값으로</button>
+          </div>
+          <div class="preset-grid">
+            <button type="button" data-months="1">1</button>
+            <button type="button" data-months="2">2</button>
+            <button type="button" data-months="3">3</button>
+            <button type="button" data-months="4">4</button>
+            <button type="button" data-months="5">5</button>
+            <button type="button" data-months="6">6</button>
+            <button type="button" data-months="7">7</button>
+            <button type="button" data-months="8">8</button>
+            <button type="button" data-months="9">9</button>
+            <button type="button" data-months="10">10</button>
+            <button type="button" data-months="11">11</button>
+            <button type="button" data-months="12">12</button>
+          </div>
         </div>
 
         <div class="note warn" id="warning" hidden style="margin-top:18px;"></div>
