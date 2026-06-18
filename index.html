@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IRIS 산출근거 연봉금액 계산기</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23211c17'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23ea580c' font-family='sans-serif' font-weight='900'%3E%E2%82%A9%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #211c17;
+      --ink2: #40382f;
+      --muted: #847a6c;
+      --line: #ece2d2;
+      --line2: #f2ebde;
+      --bg: #faf6ee;
+      --panel: #ffffff;
+      --brand: #ea580c;
+      --brand2: #c2410c;
+      --grad: #211c17;
+      --accent: #ea580c;
+      --ok-bg: #fff4ea; --ok-bd: #f7cba3; --ok-tx: #b4480f;
+      --warn-bg: #fdeee3; --warn-bd: #f0b083; --warn-tx: #9a3412;
+      --shadow: 0 16px 40px rgba(33, 28, 23, .10);
+      --shadow-sm: 0 2px 8px rgba(33, 28, 23, .06);
+      --sans: 'Pretendard Variable', Pretendard, 'Nanum Gothic', 'Malgun Gothic', -apple-system, system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      word-break: keep-all;
+      background:
+        radial-gradient(820px 460px at 92% -10%, rgba(234, 88, 12, .08), transparent 60%),
+        var(--bg);
+    }
+
+    main {
+      width: min(1120px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 40px 0 56px;
+    }
+
+    /* ── header ── */
+    .topbar { margin-bottom: 26px; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 12.5px; font-weight: 700; letter-spacing: .02em;
+      color: var(--accent); background: #fff;
+      border: 1px solid #f5d6bd; border-radius: 100px;
+      padding: 5px 13px; margin-bottom: 16px;
+    }
+    .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+    h1 {
+      margin: 0;
+      font-size: clamp(25px, 4vw, 34px);
+      font-weight: 800;
+      letter-spacing: -.025em;
+      line-height: 1.18;
+    }
+    h1 .hl { color: var(--accent); }
+    .lede { margin: 10px 0 0; color: var(--muted); font-size: 15px; }
+
+    /* ── layout ── */
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 392px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      animation: rise .5s cubic-bezier(.2, .7, .2, 1) both;
+    }
+    .layout > .panel:nth-child(2) { animation-delay: .08s; }
+
+    .form { padding: 26px 26px 24px; }
+
+    .panel-title {
+      display: flex; align-items: center; gap: 9px;
+      font-size: 13px; font-weight: 800; letter-spacing: .02em;
+      color: var(--ink2); margin: 0 0 18px;
+    }
+    .panel-title::before {
+      content: ''; width: 4px; height: 15px; border-radius: 3px; background: var(--accent);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink2);
+      font-size: 13.5px;
+      font-weight: 700;
+    }
+
+    .field { min-width: 0; }
+
+    input, select {
+      width: 100%;
+      height: 48px;
+      border: 1.5px solid #d7deea;
+      border-radius: 11px;
+      padding: 0 14px;
+      color: var(--ink);
+      background: #fff;
+      font: inherit;
+      font-size: 15.5px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    input::placeholder { color: #aab3c4; font-weight: 500; }
+
+    input:focus, select:focus {
+      border-color: var(--brand2);
+      box-shadow: 0 0 0 4px rgba(234, 88, 12, .16);
+    }
+
+    select {
+      appearance: none; -webkit-appearance: none;
+      padding-right: 34px; cursor: pointer; font-weight: 700;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7689' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 13px center;
+    }
+
+    .row { display: grid; grid-template-columns: minmax(0, 1fr) 116px; gap: 9px; }
+    .rate-row { display: grid; grid-template-columns: minmax(0, 1fr) 50px; gap: 9px; align-items: center; }
+
+    .suffix {
+      height: 48px; display: grid; place-items: center;
+      border: 1.5px solid var(--line); border-radius: 11px;
+      background: #f6f8fc; color: var(--muted); font-weight: 800;
+    }
+
+    .preset-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; align-items: center; }
+    .preset-bar .plabel { font-size: 12.5px; font-weight: 700; color: var(--muted); margin-right: 2px; }
+
+    button {
+      min-height: 40px;
+      border: 1.5px solid #d7deea;
+      border-radius: 100px;
+      padding: 0 15px;
+      color: var(--ink2);
+      background: #fff;
+      font: inherit;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    button:hover { border-color: #e3d6c0; background: #f5efe3; color: var(--accent); transform: translateY(-1px); }
+
+    .primary {
+      border-color: transparent;
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(234, 88, 12, .26);
+      margin-left: auto;
+    }
+    .primary:hover { color: #fff; filter: brightness(1.05); box-shadow: 0 8px 20px rgba(234, 88, 12, .32); }
+
+    /* ── results ── */
+    .results { padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+
+    .hero-card {
+      position: relative; overflow: hidden;
+      background: #fff7f0;
+      border: 1.5px solid #f6d4b9;
+      border-radius: 15px;
+      padding: 20px 22px;
+      color: var(--ink);
+      box-shadow: 0 12px 28px rgba(234, 88, 12, .12);
+    }
+    .hero-card::after {
+      content: ''; position: absolute; right: -46px; top: -54px;
+      width: 170px; height: 170px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(234, 88, 12, .10), transparent 70%);
+    }
+    .hero-label {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      font-size: 12.5px; font-weight: 700; color: var(--muted); margin-bottom: 10px;
+      position: relative; z-index: 1;
+    }
+    .hero-label .chip {
+      font-size: 11px; font-weight: 800; color: #fff; white-space: nowrap;
+      background: var(--accent); border: 1px solid var(--accent);
+      border-radius: 100px; padding: 2px 10px;
+    }
+    .hero-value {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      position: relative; z-index: 1;
+    }
+    .hero-value .num { display: flex; align-items: baseline; gap: 3px; min-width: 0; }
+    .hero-value .num #periodSalary {
+      font-size: clamp(30px, 7vw, 44px); font-weight: 800; letter-spacing: -.03em;
+      line-height: 1.04; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; color: var(--accent);
+    }
+    .hero-value .unit { font-size: 18px; font-weight: 700; color: var(--muted); }
+
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat {
+      background: #f8f2e8; border: 1px solid var(--line2); border-radius: 13px; padding: 14px 15px;
+      transition: transform .15s, box-shadow .15s, border-color .15s;
+    }
+    .stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); border-color: #ecdfc9; }
+    .stat .result-label { color: var(--muted); font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+    .stat .value {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 6px;
+      font-size: 20px; font-weight: 800; letter-spacing: -.02em;
+      color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1.2;
+    }
+    .stat .value span:first-child { min-width: 0; overflow-wrap: anywhere; }
+
+    .copy {
+      width: 36px; min-width: 36px; height: 34px; padding: 0;
+      border-radius: 9px; font-size: 15px; line-height: 1;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .hero-card .copy {
+      border-color: #f3ccaa; background: #fff; color: var(--accent);
+    }
+    .hero-card .copy:hover { background: #fff1e6; color: var(--accent); transform: translateY(-1px); }
+
+    .note {
+      padding: 14px 15px;
+      border: 1px solid var(--ok-bd);
+      border-left: 4px solid var(--ok-tx);
+      border-radius: 12px;
+      background: var(--ok-bg);
+      color: var(--ok-tx);
+      font-size: 14px; font-weight: 600; line-height: 1.55;
+    }
+    .note b, .note strong { font-weight: 800; }
+
+    .formula {
+      color: var(--muted); font-size: 12.5px; line-height: 1.7;
+      font-variant-numeric: tabular-nums;
+      padding: 13px 15px; background: #f8f2e8; border: 1px dashed #e8dcc6; border-radius: 12px;
+    }
+
+    .warn {
+      border: 1px solid var(--warn-bd);
+      border-left: 4px solid var(--warn-tx);
+      background: var(--warn-bg);
+      color: var(--warn-tx);
+    }
+
+    footer { margin-top: 22px; text-align: center; color: #9aa3b4; font-size: 12px; }
+
+    @media (max-width: 880px) {
+      main { width: min(100% - 26px, 580px); padding: 26px 0 40px; }
+      .layout, .grid { display: block; }
+      .panel + .panel, .field + .field { margin-top: 16px; }
+      .form { padding: 22px; }
+      .primary { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="topbar">
+      <span class="eyebrow"><span class="dot"></span>IRIS 연봉금액(원) 입력값 계산</span>
+      <h1><span class="hl">IRIS</span> 산출근거 연봉금액 계산기</h1>
+      <p class="lede">연봉·참여율·참여기간만 넣으면 IRIS에 입력할 산출근거 금액을 바로 계산합니다.</p>
+    </div>
+
+    <div class="layout">
+      <section class="panel form" aria-label="입력">
+        <p class="panel-title">입력값</p>
+        <div class="grid">
+          <div class="field">
+            <label for="salary">연봉</label>
+            <div class="row">
+              <input id="salary" type="text" inputmode="numeric" value="55,200">
+              <select id="salaryUnit" aria-label="연봉 단위">
+                <option value="1000" selected>천원</option>
+                <option value="1">원</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="rate">참여율</label>
+            <div class="rate-row">
+              <input id="rate" type="number" min="0" max="100" step="0.01" value="20">
+              <div class="suffix">%</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="startMonth">참여 시작월</label>
+            <input id="startMonth" type="month" value="2026-04">
+          </div>
+
+          <div class="field">
+            <label for="endMonth">참여 종료월</label>
+            <input id="endMonth" type="month" value="2026-05">
+          </div>
+        </div>
+
+        <div class="preset-bar" aria-label="빠른 설정">
+          <span class="plabel">빠른 기간</span>
+          <button type="button" data-months="1">1개월</button>
+          <button type="button" data-months="2">2개월</button>
+          <button type="button" data-months="3">3개월</button>
+          <button type="button" data-months="6">6개월</button>
+          <button type="button" data-months="12">12개월</button>
+          <button type="button" class="primary" id="resetExample">예시값으로</button>
+        </div>
+
+        <div class="note warn" id="warning" hidden style="margin-top:18px;"></div>
+      </section>
+
+      <aside class="panel results" aria-label="결과">
+        <div class="hero-card">
+          <div class="hero-label"><span>IRIS에 입력할 산출근거 연봉금액(원)</span><span class="chip">그대로 입력</span></div>
+          <div class="hero-value">
+            <div class="num"><span id="periodSalary">9,200,000</span><span class="unit">원</span></div>
+            <button class="copy" type="button" data-copy="periodSalary" title="복사">⧉</button>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat">
+            <div class="result-label">참여율 반영 금액 확인용</div>
+            <div class="value">
+              <span id="chargedAmount">1,840,000</span>
+              <button class="copy" type="button" data-copy="chargedAmount" title="복사">⧉</button>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="result-label">참여개월 수</div>
+            <div class="value"><span id="months">2개월</span></div>
+          </div>
+        </div>
+
+        <div class="note" id="plainResult">
+          IRIS 산출근거 연봉금액(원)에는 9,200,000원을 입력하면 됩니다.
+        </div>
+
+        <div class="formula" id="formula">
+          IRIS 입력 산식: 55,200,000원 ÷ 12 × 2개월 = 9,200,000원<br>
+          확인용 산식: 9,200,000원 × 20% = 1,840,000원
+        </div>
+      </aside>
+    </div>
+
+    <footer>참여기간은 시작월·종료월을 포함해 계산합니다 · 입력값은 브라우저에서만 처리되며 저장·전송되지 않습니다.</footer>
+  </main>
+
+  <script>
+    const salary = document.getElementById("salary");
+    const salaryUnit = document.getElementById("salaryUnit");
+    const rate = document.getElementById("rate");
+    const startMonth = document.getElementById("startMonth");
+    const endMonth = document.getElementById("endMonth");
+    const periodSalary = document.getElementById("periodSalary");
+    const chargedAmount = document.getElementById("chargedAmount");
+    const monthsEl = document.getElementById("months");
+    const formula = document.getElementById("formula");
+    const plainResult = document.getElementById("plainResult");
+    const warning = document.getElementById("warning");
+
+    function numberOnly(value) {
+      return Number(String(value).replace(/[^\d.]/g, "")) || 0;
+    }
+
+    function money(value) {
+      return Math.round(value).toLocaleString("ko-KR");
+    }
+
+    function monthNumber(value) {
+      if (!value || !value.includes("-")) return null;
+      const [year, month] = value.split("-").map(Number);
+      return year * 12 + month;
+    }
+
+    function monthValue(monthNumberValue) {
+      const year = Math.floor((monthNumberValue - 1) / 12);
+      const month = ((monthNumberValue - 1) % 12) + 1;
+      return `${year}-${String(month).padStart(2, "0")}`;
+    }
+
+    function selectedMonths() {
+      const start = monthNumber(startMonth.value);
+      const end = monthNumber(endMonth.value);
+      if (start === null || end === null) return 0;
+      return Math.max(0, end - start + 1);
+    }
+
+    function calculate() {
+      const annual = numberOnly(salary.value) * Number(salaryUnit.value);
+      const percent = numberOnly(rate.value);
+      const months = selectedMonths();
+      const period = annual / 12 * months;
+      const charged = period * percent / 100;
+
+      periodSalary.textContent = money(period);
+      chargedAmount.textContent = money(charged);
+      monthsEl.textContent = `${months}개월`;
+      plainResult.textContent = `IRIS 산출근거 연봉금액(원)에는 ${money(period)}원을 입력하면 됩니다.`;
+      formula.innerHTML = `IRIS 입력 산식: ${money(annual)}원 ÷ 12 × ${months}개월 = ${money(period)}원<br>확인용 산식: ${money(period)}원 × ${percent}% = ${money(charged)}원`;
+
+      if (months === 0) {
+        warning.hidden = false;
+        warning.textContent = "참여 종료월이 시작월보다 빠릅니다. 기간을 다시 선택하세요.";
+      } else {
+        warning.hidden = true;
+      }
+    }
+
+    salary.addEventListener("blur", () => {
+      salary.value = numberOnly(salary.value).toLocaleString("ko-KR");
+    });
+
+    [salary, salaryUnit, rate, startMonth, endMonth].forEach((el) => {
+      el.addEventListener("input", calculate);
+      el.addEventListener("change", calculate);
+    });
+
+    document.querySelectorAll("[data-months]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const start = monthNumber(startMonth.value) || monthNumber("2026-01");
+        const months = Number(button.dataset.months);
+        endMonth.value = monthValue(start + months - 1);
+        calculate();
+      });
+    });
+
+    document.getElementById("resetExample").addEventListener("click", () => {
+      salary.value = "55,200";
+      salaryUnit.value = "1000";
+      rate.value = "20";
+      startMonth.value = "2026-04";
+      endMonth.value = "2026-05";
+      calculate();
+    });
+
+    document.querySelectorAll("[data-copy]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const text = document.getElementById(button.dataset.copy).textContent.replace(/,/g, "");
+        await navigator.clipboard.writeText(text);
+        button.textContent = "✓";
+        setTimeout(() => {
+          button.textContent = "⧉";
+        }, 900);
+      });
+    });
+
+    calculate();
+  </script>
+</body>
+</html>
