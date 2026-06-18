@@ -161,6 +161,11 @@
     .plabel em { font-style: normal; font-weight: 800; color: var(--accent); margin-left: 2px; }
     .preset-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
     .preset-grid button { border-radius: 10px; min-height: 44px; padding: 0; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .preset-grid button.active {
+      background: var(--accent); color: #fff; border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(234, 88, 12, .26);
+    }
+    .preset-grid button.active:hover { background: var(--accent); color: #fff; transform: none; }
 
     button {
       min-height: 40px;
@@ -444,6 +449,10 @@
       } else {
         warning.hidden = true;
       }
+
+      document.querySelectorAll("[data-months]").forEach((b) => {
+        b.classList.toggle("active", Number(b.dataset.months) === months);
+      });
     }
 
     salary.addEventListener("blur", () => {
